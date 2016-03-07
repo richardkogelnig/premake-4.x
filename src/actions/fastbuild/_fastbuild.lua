@@ -61,14 +61,14 @@
 		-- function that will actually do the work of generating the file contents.
 
 		onsolution = function(sln)
-			premake.generate(sln, "%%.sln.txt", premake.fastbuild.solution)
+			premake.generate(sln, "%%.bff", premake.fastbuild.solution)
 		end,
 
 		onproject = function(prj)
 			if premake.isdotnetproject(prj) then
-				premake.generate(prj, "%%.csprj.txt", premake.fastbuild.project)
+				premake.generate(prj, "%%.csproj.bff", premake.fastbuild.project)
 			else
-				premake.generate(prj, "%%.cprj.txt", premake.fastbuild.project)
+				premake.generate(prj, "%%.cprj.bff", premake.fastbuild.project)
 			end
 		end,
 
@@ -79,14 +79,14 @@
 		-- that use the same pattern matching as premake.generate() above.
 
 		oncleansolution = function(sln)
-			premake.clean.file(sln, "%%.sln.txt")
+			premake.clean.file(sln, "%%.bff")
 		end,
 		
 		oncleanproject  = function(prj)
 			if premake.isdotnetproject(prj) then
-				premake.clean.file(prj, "%%.csprj.txt")
+				premake.clean.file(prj, "%%.csprj.bff")
 			else
-				premake.clean.file(prj, "%%.cprj.txt")
+				premake.clean.file(prj, "%%.cprj.bff")
 			end
 		end,
 		
