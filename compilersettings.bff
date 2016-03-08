@@ -93,42 +93,22 @@ Compiler( 'Compiler-x64-OSX' )
 
 .MSVCBaseConfig =
 [
-	.AdditionalWarnings		= ' /we4062' // enumerator 'identifier' in a switch of enum 'enumeration' is not handled
-							+ ' /we4263' // 'function' : member function does not override any base class virtual member function
-							+ ' /we4265' // 'class': class has virtual functions, but destructor is not virtual
-							+ ' /we4296' // 'operator': expression is always false
-							+ ' /we4555' // expression has no effect; expected expression with side-effect
-							+ ' /we4619' // #pragma warning : there is no warning number 'number'
-							+ ' /we4640' // 'instance' : construction of local static object is not thread-safe
-							+ ' /we4826' // Conversion from 'type1 ' to 'type_2' is sign-extended. This may cause unexpected runtime behavior.
-							+ ' /we4836' // nonstandard extension used : 'type' : local types or unnamed types cannot be used as template arguments
-							+ ' /we4905' // wide string literal cast to 'LPSTR'
-							+ ' /we4906' // string literal cast to 'LPWSTR'
-							+ ' /wd6001' // disable warning C6001: using uninitialized memory <variable>
-
-	.CompilerOptions 		= '"%1" /Z7 /nologo /c /W4 /WX'
-							+ ' /Zc:inline'			// Remove unreferenced COMDATs at compile time (VS2013.2+)
-							+ ' /Zc:strictStrings'	// Require const only usage of string literals (VS2013+)
-							+ .AdditionalWarnings
-							+ ' /fp:fast'
-							+ ' /D"WIN32_LEAN_AND_MEAN" /D_WIN32 /D__WINDOWS__'
-							+ ' /D"_CRT_SECURE_NO_WARNINGS"' // don't warn about unsafe functions
-                            + ' /D"_WINSOCK_DEPRECATED_NO_WARNINGS"' // don't warn about deprecated winsock functions - TODO:C Update API use
+	.CompilerOptions 		= '"%1" /Z7 /nologo /c '
 	.PCHOptions				= .CompilerOptions
 							+ ' /Fp"%2" /Fo"%3"'
 	.CompilerOptions		+ ' /Fo"%2"'
-	.LibrarianOptions		= '/NODEFAULTLIB /WX /NOLOGO /OUT:"%2" "%1"'
-	.LinkerOptions			= '/NODEFAULTLIB /WX /NOLOGO /INCREMENTAL:NO /OUT:"%2" "%1" /DEBUG'
+	.LibrarianOptions		= '/NOLOGO /OUT:"%2" "%1"'
 
-	// Optimizations
-	.CompilerDebugOptimizations		= ' /MTd /Od /RTC1 /GS /Oy- /GR- /analyze'
-	.CompilerReleaseOptimizations	= ' /MT /Ox /Oy /Oi /GS- /GF /GL /Gy /Gw /GR- /analyze'
+	; TODO richardk: get this libraries right
+	.LinkerOptions			= '/NOLOGO /INCREMENTAL:NO /OUT:"%2" "%1" /DEBUG "ole32.lib" "kernel32.lib" "user32.lib" "gdi32.lib" "winspool.lib" "comdlg32.lib" "advapi32.lib" "shell32.lib" "oleaut32.lib" "uuid.lib" "odbc32.lib" "odbccp32.lib" ' 
+
 	.LibrarianDebugOptimizations	= ''
 	.LibrarianReleaseOptimizations  = ' /LTCG'
 	.LinkerDebugOptimizations		= '' + ' "libcmtd.lib" "libvcruntimed.lib" "libucrtd.lib"'
 	.LinkerReleaseOptimizations		= ' /LTCG /OPT:REF,ICF' + ' "libcmt.lib" "libvcruntime.lib" "libucrt.lib"'	
 
-	.BaseIncludePaths		= ' /I"./"'
+	.BaseIncludePaths		= ' /I"./" /I"c:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\" /I"r:\Programs\Microsoft Visual Studio 14.0\VC\include\" /I"c:\Program Files (x86)\Windows Kits\8.1\Include\um\" /I"c:\Program Files (x86)\Windows Kits\8.1\Include\shared\"' 
+
 
 	.CompilerOptions		+ .BaseIncludePaths
 	.PCHOptions				+ .BaseIncludePaths
@@ -156,38 +136,3 @@ Compiler( 'Compiler-x64-OSX' )
 							+ ' /LIBPATH:"$WindowsLibPaths$/10.0.10586.0/ucrt/x86/"'
 	 						+ ' /LIBPATH:"$VSBasePath$/VC/lib"'
 ]
-.X86DebugConfig =
-[
-	Using( .X86BaseConfig )
-	.Config					= 'Debug'
-	.CompilerOptions		+ ' /DDEBUG /DPROFILING_ENABLED'
-							+ .CompilerDebugOptimizations
-	.PCHOptions				+ ' /DDEBUG /DPROFILING_ENABLED'
-							+ .CompilerDebugOptimizations
-	.LibrarianOptions		+ .LibrarianDebugOptimizations
-	.LinkerOptions			+ .LinkerDebugOptimizations 
-							
-]
-
-.X86ReleaseConfig =
-[
-	Using( .X86BaseConfig )
-	.Config					= 'Release'
-	.CompilerOptions		+ ' /DRELEASE'
-							+ ' /d2Zi+'		// Improve optimized debugging VS2013.3+
-	.PCHOptions				+ ' /DRELEASE'
-
-    // Setup de-optimization options (FASTBUILD_DEOPTIMIZE_OBJECT)
-    .DeoptimizeWritableFilesWithToken   = true
-	.CompilerOptionsDeoptimized		= '$CompilerOptions$ /Od'
-	.PCHOptionsDeoptimized			= '$PCHOptions$ /Od'
-
-	.CompilerOptions        + .CompilerReleaseOptimizations							
-	.PCHOptions             + .CompilerReleaseOptimizations							
-	.LibrarianOptions		+ .LibrarianReleaseOptimizations
-	.LinkerOptions			+ .LinkerReleaseOptimizations
-							
-]
-
-.Configs_Windows_MSVC	= { .X86BaseConfig }
-;.Configs_Windows_MSVC	= { .X86DebugConfig, .X86ReleaseConfig }
