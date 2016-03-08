@@ -93,7 +93,7 @@ Compiler( 'Compiler-x64-OSX' )
 
 .MSVCBaseConfig =
 [
-	.CompilerOptions 		= '"%1" /Z7 /nologo /c '
+	.CompilerOptions 		= '"%1" /nologo /c /FS ' ; /FS Forces writes to the program database (PDB) file to be serialized through MSPDBSRV.EXE.
 	.PCHOptions				= .CompilerOptions
 							+ ' /Fp"%2" /Fo"%3"'
 	.CompilerOptions		+ ' /Fo"%2"'

@@ -1,3 +1,5 @@
+-- richardk: copied from ../example and modified (retaining lots of comments which need cleanup once "done") 
+
 -- Define a namespace for my new action. The second line defines an alias that I
 -- can use in this file, saving myself some typing. It will not be visible outside
 -- of this file (though I can always define it again).
@@ -20,7 +22,7 @@
 		shortname = "FASTBuild",
 		
 		-- The description is shown in the help text (premake4 /help)
-		description = "An action which creates a fastbuild .bff file",
+		description = "An action which creates a fastbuild .bff file (see http://fastbuild.org) ",
 
 		-- Some actions imply a particular operating system: Visual Studio only
 		-- runs on Windows, and Xcode only on Mac OS X. If this is the case,
@@ -29,7 +31,7 @@
 		-- os = "macosx",
 
 		-- Which kinds of targets this action supports; remove those you don't.
-		valid_kinds = { "ConsoleApp", "WindowedApp", "SharedLib", "StaticLib" },
+		valid_kinds = { "ConsoleApp", "WindowedApp", "SharedLib", "StaticLib" }, -- TODO: richardk remove WindowedApp? does fastbuild support this in any way?
 
 		-- Which programming languages this actions supports; remove those you don't.
 		valid_languages = { "C", "C++", "C#" },
@@ -37,11 +39,17 @@
 		-- Which compiler sets this action supports; remove those you don't. The set
 		-- is specified with the /cc and /dotnet command-line options. You can find
 		-- the tool interfaces at src/tools.
+
+		-- TODO: richark correctly support tooling 
 		valid_tools     = {
-			cc     = { "msc", "gcc", "ow" },
-			dotnet = { "mono", "msnet", "pnet" },
+			cc     = { "msc" }, -- TODO: richardk add clang, (what about xbox msvc?) 
+			dotnet = {},
 		},
 
+		-- valid_tools     = {
+		-- 	cc     = { "msc", "gcc", "ow" },
+		-- 	dotnet = { "mono", "msnet", "pnet" },
+		-- },
 		
 		-- This function is called during state validation. If your action has some
 		-- special requirements you can check them here and error if necessary.
