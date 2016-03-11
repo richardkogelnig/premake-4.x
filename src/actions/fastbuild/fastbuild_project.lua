@@ -217,11 +217,23 @@ for cfg in premake.eachconfig(prj) do
 end
 _p("}")
 
-		-----------------------
-		_p('{')
-		_p("    .ProjectName = '%s'", prj.name)
-		_p("    .ProjectPath = '.'", prj.basedir) -- TODO: richardk can all Projects have . as the projectpath?
+		_p('    .UnityInputHeaderFiles = ')
+		_p('    {')
+			local tr = premake.project.buildsourcetree(prj)
+			premake.tree.sort(tr)
+			premake.tree.traverse(tr, {
+				onleaf = function(node, depth)
+					local rel_filepath = node.path 
+					if rel_filepath:endswith(".h") or rel_filepath:endswith(".hpp") then -- TODO richardk make this filter configurable (e.g. acccept .cxx?) 
+						_p('        "%s",', path.getrelative( prj.basedir, node.path))
+					end
+
+				end
+			})     
+		_p('    }')           
 		_p("")
+
+
 
 		_p('    .LibInputFiles = ')
 		_p('    {')
@@ -245,6 +257,38 @@ _p("}")
 		_p('    }')           
 		_p("")
 
+		-----------------------
+		_p('{')
+		_p("    .ProjectName = '%s'", prj.name)
+		_p("    .ProjectPath = '.'", prj.basedir) -- TODO: richardk can all Projects have . as the projectpath?
+		_p("")
+
+		-- Unity 
+		_p('{')
+    
+		_p(';Unity build')
+        _p(";.UnityInputPath             = '$ProjectPath$/'")
+        _p(".UnityOutputPath            = '$OutputBase$/Unity/'")
+        _p(".UnityInputFiles            = .LibInputFiles")
+        _p("// Windows")
+        _p("Unity( '$ProjectName$-Unity-Windows' )")
+        _p("{")
+        _p("}")
+
+        _p("// Linux")
+        _p("Unity( '$ProjectName$-Unity-Linux' )")
+        _p("{")
+        _p("}")
+
+        _p("// OSX")
+        _p("Unity( '$ProjectName$-Unity-OSX' )")
+        _p("{")
+        _p("}")
+         
+ 		_p('}')
+		_p("")
+		--------------------
+
 		_p("    ForEach(.Config in .Configs_Windows_MSVC)")
 
 		_p('    {')
@@ -258,7 +302,9 @@ _p("}")
 
 			if prj.kind == "ConsoleApp" then
 				_p('        ObjectList("%s-Lib-$Platform$-$Config$")', prj.name) 
-				_p('        {')     
+				_p('        {')
+				_p('			// Input (Unity)')
+				_p('			.CompilerInputUnity	= "$ProjectName$-Unity-Windows"')
 				_p('            .CompilerInputFiles = .LibInputFiles ; defined above'  )
 				_p('            .CompilerOutputPath = "tmp/$Platform$-$Config$/"')   
 				_p('        }')
